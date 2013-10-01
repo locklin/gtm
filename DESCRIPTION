@@ -1,0 +1,10 @@
+Package: gtm
+Type: Package
+Title: Generative topographic mapping
+Version: 1.1
+Date: 2013-10-01
+Author: Ondrej Such with modifications by Scott Locklin
+Maintainer: Scott Locklin <scott_locklin@yahoo.com>
+Description: Generative topological mapping
+License: GPL
+URL: https://github.com/locklin/gtm/
