@@ -9,11 +9,11 @@ The returned weight matrix maps the mean of the latent variable to the mean of t
 An initial value for beta is also calculated, based on the noise of the data (the "L+1"th eigenvalue) and the interdistances between Gaussian mixture centres in the data space. 
 }
 \usage{
-gtm.pci.beta(T, X, FI)
+gtm.pci.beta(TT, X, FI)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{target distribution sample; one data point per row; N-by-D  }
+  \item{TT}{target distribution sample; one data point per row; N-by-D  }
   \item{X}{ the latent distribution sample, K-by-L  }
   \item{FI}{basis functions' activation when fed the latent data,
      X, plus a bias, K-by-(M+1)  }
@@ -40,8 +40,8 @@ The first dimension (column) of X will map to the first principal
   X = gtm.pts(8)
   FI = gtm.gbf(MU, sigma, X)
   t = matrix((1:40)/5, ncol=1)
-  T = cbind(t, sin(t))
-  gtm.pci.beta(T, X, FI)
+  TT = cbind(t, sin(t))
+  gtm.pci.beta(TT, X, FI)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

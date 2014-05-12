@@ -6,11 +6,11 @@
  1-5 lines 
 }
 \usage{
-gtm.stp1(T, noLatVarSmpl, noBasFn, s)
+gtm.stp1(TT, noLatVarSmpl, noBasFn, s)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{target data, to be modelled by the GTM.}
+  \item{TT}{target data, to be modelled by the GTM.}
   \item{noLatVarSmpl}{number of samples in the latent variable space}
   \item{noBasFn}{number of basis functions}
   \item{s}{the width of basis functions relative
@@ -45,13 +45,13 @@ The initial linear mapping maps mean and std.devs.
 }
 \seealso{ \code{\link{gtm.stp2}} }
 \examples{
-  T = matrix(3:61/20, ncol=1);
-  T = cbind(T, T + 1.25 * sin(2*T));
+  TT = matrix(3:61/20, ncol=1);
+  TT = cbind(TT, TT + 1.25 * sin(2*T));
   # plot of sample data 
-  plot(T[,1], T[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
+  plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  stpResult = gtm.stp1(T, 20, 5, 2);
+  stpResult = gtm.stp1(TT, 20, 5, 2);
   stpY = stpResult$FI %*% stpResult$W
   
   # plot initialized data points

@@ -7,11 +7,11 @@
  the mode of the corresponding posterior distribution induced in the latent space.
 }
 \usage{
-modes = gtm.pmd(T, X, FI, W)
+modes = gtm.pmd(TT, X, FI, W)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{ data points representing the distribution in the target space. N-by-D  }
+  \item{TT}{ data points representing the distribution in the target space. N-by-D  }
   \item{X}{ data points forming a latent variable sample of the distribution in the latent space. K-by-L }
   \item{FI}{activations of the basis functions when fed X; K-by-(M+1)  }
   \item{W}{a matrix of trained weights  }
@@ -22,7 +22,7 @@ modes = gtm.pmd(T, X, FI, W)
 \seealso{\code{\link{gtm.ppd1}}, \code{\link{gtm.ppd2}}, \code{\link{gtm.pmn}}, }
 \examples{
   lv = gtm.demo()
-  gtm.pmd(lv$T, lv$X, lv$FI, lv$W)
+  gtm.pmd(lv$TT, lv$X, lv$FI, lv$W)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

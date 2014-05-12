@@ -7,11 +7,11 @@
  of the corresponding posterior distribution induced in the latent space. 
 }
 \usage{
-means = gtm.pmn(T, X, FI, W, b)
+means = gtm.pmn(TT, X, FI, W, b)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{ data points representing the distribution in 
+  \item{TT}{ data points representing the distribution in 
      the target space. N-by-D  }
   \item{X}{ data points forming a latent variable sample 
      of the distribution in the latent space. K-by-L}
@@ -25,7 +25,7 @@ means = gtm.pmn(T, X, FI, W, b)
 \seealso{\code{\link{gtm.ppd1}},\code{\link{gtm.ppd2}} \code{\link{gtm.pmd}}}
 \examples{
    lv = gtm.demo()
-   gtm.pmn(lv$T, lv$X, lv$FI, lv$W, lv$beta)
+   gtm.pmn(lv$TT, lv$X, lv$FI, lv$W, lv$beta)
  
 
 }

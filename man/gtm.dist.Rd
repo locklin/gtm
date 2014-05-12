@@ -4,14 +4,14 @@
 \title{ Calculate the squared distances between two sets of data points}
 \description{
   This function calculates distances between all data points in the two 
-    data sets T and Y and returns them in a matrix. 
+    data sets TT and Y and returns them in a matrix. 
 }
 \usage{
-gtm.dist(T, Y, mode = 0)
+gtm.dist(TT, Y, mode = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T,Y}{data set matrices in which each row is a data point; 
+  \item{TT,Y}{data set matrices in which each row is a data point; 
      dimensions N-by-D and K-by-D respectively }
   \item{mode}{mode of calculation; iff m > 0, min- and maxDist (below) are calculated; the default mode is 0  }
 }
@@ -20,7 +20,7 @@ gtm.dist(T, Y, mode = 0)
 }
 \value{
 if m == 0 then \code{DIST} - matrix containing the calculated distances; 
-    dimension K-by-N; DIST(k,n) contains the squared distance between T(n,:) and Y(k,:). 
+    dimension K-by-N; DIST(k,n) contains the squared distance between TT(n,:) and Y(k,:). 
  if m > 0 then a list containing matrix \code{DIST}, \code{minDist}, 
   \code{maxDist}, the latter two being 
   vectors containing the minimum and maximum of each column in DIST, respectively; 1-by-N

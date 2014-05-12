@@ -7,11 +7,11 @@ The function creates two rectangular grids \code{X}, \code{MU} in the latent spa
 according to principal components.
 }
 \usage{
-gtm.stp2(T, noLatVarSmpl, noBasFn, s)
+gtm.stp2(TT, noLatVarSmpl, noBasFn, s)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{target data, to be modelled by the GTM.}
+  \item{TT}{target data, to be modelled by the GTM.}
   \item{noLatVarSmpl}{number of samples in the latent variable
 				space; must be a square, e.g.
 				1, 4, 9, 16, 25, 36, 49, ...}
@@ -49,13 +49,13 @@ The initial linear mapping maps the std.devs. 1:1 from the latent to the
 }
 \seealso{ \code{\link{gtm.ri}}}
 \examples{
-  T = matrix(3:61/20, ncol=1);
-  T = cbind(T, T + 1.25 * sin(2*T));
+  TT = matrix(3:61/20, ncol=1);
+  TT = cbind(TT, TT + 1.25 * sin(2*T));
   # plot of sample data 
-  plot(T[,1], T[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
+  plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  stpResult = gtm.stp2(T, 81, 25, 2);
+  stpResult = gtm.stp2(TT, 81, 25, 2);
   stpY = stpResult$FI %*% stpResult$W
   
   # plot initialized data points

@@ -14,11 +14,11 @@
   random mapping, and its nearest neighbours in the set of data points. 
 }
 \usage{
-W = gtm.ri(T, FI)
+W = gtm.ri(TT, FI)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{sample of target distribution, used for calculating the mean; 
+  \item{TT}{sample of target distribution, used for calculating the mean; 
      one data point per row; N-by-D }
   \item{FI}{ basis functions' activations when fed the latent data, X, 
        plus a bias, K-by-(M+1)  }
@@ -30,17 +30,17 @@ W = gtm.ri(T, FI)
 
 \seealso{\code{\link{gtm.pci}},\code{\link{gtm.pci.beta}} }
 \examples{
-  T = matrix(3:61/20, ncol=1);
-  T = cbind(T, T + 1.25 * sin(2*T));
+  TT = matrix(3:61/20, ncol=1);
+  TT = cbind(TT, TT + 1.25 * sin(2*TT));
   # plot of sample data 
-  plot(T[,1], T[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
+  plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
   X = gtm.pts(20)
   MU = gtm.pts(5)
   sigma = 1
   FI = gtm.gbf(MU, sigma, X)
-  W = gtm.ri(T, FI);
+  W = gtm.ri(TT, FI);
   Y = FI %*% W;
   
   # plot of initialized data
@@ -49,7 +49,7 @@ W = gtm.ri(T, FI)
   symbols(x=Y[,1], y=Y[,2], circles=matrix(sqrt(1/beta) ,ncol=1,nrow=nrow(Y)),
      fg='green',add=TRUE, inches=FALSE);
   
-  trnResult = gtm.trn(T, FI, W, 0.0, 20, beta, quiet=TRUE);
+  trnResult = gtm.trn(TT, FI, W, 0.0, 20, beta, quiet=TRUE);
 
   # plot of trained results
   Y = FI %*% trnResult$W;

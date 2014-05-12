@@ -10,11 +10,11 @@ a matrix, which is carried out by QR algorithm, if the matrix is positive
 definite, or by computing its pseudo-inverse, if the matrix has zero eigenvalue.
 }
 \usage{
-gtm.trn(T, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01)
+gtm.trn(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{T}{matrix containing a sample of the distribution 
+  \item{TT}{matrix containing a sample of the distribution 
 		to be modeled; N-by-D}
   \item{FI}{matrix containing the output values from
 			the basis functions, when fed the latent
@@ -45,16 +45,16 @@ List with the following components
 }
 
 \examples{
-  T = matrix(3:61/20, ncol=1);
-  T = cbind(T, T + 1.25 * sin(2*T));
-  # plot of sample data 
-  plot(T[,1], T[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
+  TT = matrix(3:61/20, ncol=1);
+  TT = cbind(TT, TT + 1.25 * sin(2*T));
+  ## plot of sample data 
+  plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
-  # setup and training
-  stpResult = gtm.stp1(T, 20, 5, 2);
-  trnResult = gtm.trn(T, stpResult$FI, stpResult$W, 0.0, 20, stpResult$beta);
+  ## setup and training
+  stpResult = gtm.stp1(TT, 20, 5, 2);
+  trnResult = gtm.trn(TT, stpResult$FI, stpResult$W, 0.0, 20, stpResult$beta);
 
-  # plot of trained results
+  ## plot of trained results
   Y = stpResult$FI %*% trnResult$W;
   plot(Y[,1], Y[,2], col='green', type='l')
 }
