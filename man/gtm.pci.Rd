@@ -9,7 +9,7 @@
 
 }
 \usage{
-W = gtm.pci(TT, X, FI)
+gtm.pci(TT, X, FI)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +19,7 @@ W = gtm.pci(TT, X, FI)
      X, plus a bias, K-by-(M+1)  }
 }
 \value{
- \code{W} - the initialised weight matrix, (K+1)-by-D 
+ \code{output} - the initialised weight matrix, (K+1)-by-D 
 }
 
 \note{
@@ -31,12 +31,12 @@ W = gtm.pci(TT, X, FI)
 }
 \seealso{ \code{\link{gtm.ri}}, \code{\link{gtm.pci.beta}} }
 \examples{
-  MU = matrix(c(0,1), ncol = 1)
-  sigma = 1
-  X = gtm.pts(8)
-  FI = gtm.gbf(MU, sigma, X)
-  t = matrix((1:40)/5, ncol=1)
-  TT = cbind(t, sin(t))
+  MU <- matrix(c(0,1), ncol = 1)
+  sigma <- 1
+  X <- gtm.pts(8)
+  FI <- gtm.gbf(MU, sigma, X)
+  tim <- matrix((1:40)/5, ncol=1)
+  TT <- cbind(tim, sin(tim))
   gtm.pci(TT, X, FI)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

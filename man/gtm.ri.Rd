@@ -14,7 +14,7 @@
   random mapping, and its nearest neighbours in the set of data points. 
 }
 \usage{
-W = gtm.ri(TT, FI)
+gtm.ri(TT, FI)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,37 +25,37 @@ W = gtm.ri(TT, FI)
 }
 
 \value{
- \code{W} - the initialised weight matrix; (M+1)-by-D 
+ \code{output} - the initialised weight matrix; (M+1)-by-D 
 }
 
 \seealso{\code{\link{gtm.pci}},\code{\link{gtm.pci.beta}} }
 \examples{
-  TT = matrix(3:61/20, ncol=1);
-  TT = cbind(TT, TT + 1.25 * sin(2*TT));
+  TT <- matrix(3:61/20, ncol=1);
+  TT <- cbind(TT, TT + 1.25 * sin(2*TT));
   # plot of sample data 
   plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  X = gtm.pts(20)
-  MU = gtm.pts(5)
-  sigma = 1
-  FI = gtm.gbf(MU, sigma, X)
-  W = gtm.ri(TT, FI);
-  Y = FI %*% W;
+  X <- gtm.pts(20)
+  MU <- gtm.pts(5)
+  sigma <- 1
+  FI <- gtm.gbf(MU, sigma, X)
+  W <- gtm.ri(TT, FI);
+  Y <- FI %*% W;
   
   # plot of initialized data
   matplot(Y[,1], Y[,2], col='green', add=TRUE, type='p', pch=23)
-  beta = gtm.bi(Y)
+  beta <- gtm.bi(Y)
   symbols(x=Y[,1], y=Y[,2], circles=matrix(sqrt(1/beta) ,ncol=1,nrow=nrow(Y)),
      fg='green',add=TRUE, inches=FALSE);
   
-  trnResult = gtm.trn(TT, FI, W, 0.0, 20, beta, quiet=TRUE);
+  trnResult <- gtm.trn(TT, FI, W, 0.0, 20, beta, quiet=TRUE);
 
   # plot of trained results
-  Y = FI %*% trnResult$W;
+  Y <- FI %*% trnResult$W;
   matplot(Y[,1], Y[,2], col='blue', type='l', add=TRUE)
   matplot(Y[,1], Y[,2], col='blue', type='p', add=TRUE, pch=22)
-  b = trnResult$beta
+  b <- trnResult$beta
   symbols(x=Y[,1], y=Y[,2], circles=matrix(sqrt(1/b) ,ncol=1,nrow=nrow(Y)),
      fg='blue',add=TRUE, inches=FALSE);
   

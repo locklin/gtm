@@ -1,3 +1,7 @@
+## imports
+import("proxy")
+
+## exports
 export("gtm.bi")
 export("gtm.demo")
 export("gtm.dist")
@@ -19,4 +23,3 @@ export("gtm.sort")
 export("gtm.stp1")
 export("gtm.stp2")
 export("gtm.trn")
-

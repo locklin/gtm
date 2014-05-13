@@ -35,12 +35,12 @@ The first dimension (column) of X will map to the first principal
 }
 \seealso{  \code{\link{gtm.ri}}, \code{\link{gtm.pci}} }
 \examples{
-  MU = matrix(c(0,1), ncol = 1)
-  sigma = 1
-  X = gtm.pts(8)
-  FI = gtm.gbf(MU, sigma, X)
-  t = matrix((1:40)/5, ncol=1)
-  TT = cbind(t, sin(t))
+  MU <- matrix(c(0,1), ncol = 1)
+  sigma <- 1
+  X <- gtm.pts(8)
+  FI <- gtm.gbf(MU, sigma, X)
+  tim <- matrix((1:40)/5, ncol=1)
+  TT <- cbind(tim, sin(tim))
   gtm.pci.beta(TT, X, FI)
 
 }

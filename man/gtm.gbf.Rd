@@ -10,7 +10,7 @@ given  by \deqn{\Phi.{ij} = \exp(- \frac{d.{ij}}{2 \sigma^2})}{%
 	     }
 
 \usage{
-FI = gtm.gbf(MU, sigma, X)
+gtm.gbf(MU, sigma, X)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,14 +20,14 @@ FI = gtm.gbf(MU, sigma, X)
 }
 
 \value{
- \code{FI} - the matrix of basis functions output values; K-by-(M+1), "+1" for a bias basis function with a fixed value of 1.0 
+ \code{output} - the matrix of basis functions output values; K-by-(M+1), "+1" for a bias basis function with a fixed value of 1.0 
 }
 \seealso{  \code{\link{gtm.lbf}} }
 \examples{  
-  MU = matrix(c(0,1), ncol = 1)
-  sigma = 1
-  X = gtm.pts(8)
-  FI = gtm.gbf(MU, sigma, X)
+  MU <- matrix(c(0,1), ncol = 1)
+  sigma <- 1
+  X <- gtm.pts(8)
+  FI <- gtm.gbf(MU, sigma, X)
   matplot(X, FI, type="l")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

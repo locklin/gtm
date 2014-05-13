@@ -7,7 +7,7 @@
  of the corresponding posterior distribution induced in the latent space. 
 }
 \usage{
-means = gtm.pmn(TT, X, FI, W, b)
+gtm.pmn(TT, X, FI, W, b)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,11 +20,11 @@ means = gtm.pmn(TT, X, FI, W, b)
   \item{b}{ the trained value for beta}
 }
 \value{
-\code{means} - the posterior means in latent space. N-by-L 
+\code{output} - the posterior means in latent space. N-by-L 
 }
 \seealso{\code{\link{gtm.ppd1}},\code{\link{gtm.ppd2}} \code{\link{gtm.pmd}}}
 \examples{
-   lv = gtm.demo()
+   lv <- gtm.demo()
    gtm.pmn(lv$TT, lv$X, lv$FI, lv$W, lv$beta)
  
 

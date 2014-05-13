@@ -6,7 +6,7 @@
 Size of the column is the usual Euclidean norm.
 }
 \usage{
-srtdR = gtm.sort(R)
+gtm.sort(R)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,10 +14,10 @@ srtdR = gtm.sort(R)
 }
 
 \value{
-\code{srtdR} - the corresponding sorted matrix
+\code{output} - the corresponding sorted matrix
 }
 \examples{
-  m = matrix( c(1,4,2,7,1,3), nrow=2)
+  m <- matrix( c(1,4,2,7,1,3), nrow=2)
 
   gtm.sort(m)
 }

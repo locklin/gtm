@@ -7,13 +7,18 @@
     data sets TT and Y and returns them in a matrix. 
 }
 \usage{
-gtm.dist(TT, Y, mode = 0)
+gtm.dist(x, y, m = 0, kind="Euclidean")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{TT,Y}{data set matrices in which each row is a data point; 
+  \item{x,y}{data set matrices in which each row is a data point; 
      dimensions N-by-D and K-by-D respectively }
-  \item{mode}{mode of calculation; iff m > 0, min- and maxDist (below) are calculated; the default mode is 0  }
+  \item{m}{mode of calculation; iff m > 0, min- and maxDist (below) are
+    calculated; the default mode is0  }
+  \item{kind}{ type of distance; presently only tested with Euclidean,
+    but could eventually include all of the proxy methods in
+    gtm::GLOBALPROXYNAMES }
+
 }
 \details{
  
@@ -26,9 +31,8 @@ if m == 0 then \code{DIST} - matrix containing the calculated distances;
   vectors containing the minimum and maximum of each column in DIST, respectively; 1-by-N
 }
 \examples{  
-  A = matrix(c(1,3,4,2,0,-1), ncol=2)
-  A
-  B = matrix(c(1,0,0,1), ncol=2)
+  A <- matrix(c(1,3,4,2,0,-1), ncol=2)
+  B <- matrix(c(1,0,0,1), ncol=2)
   gtm.dist(A, B)
   gtm.dist(A, B ,1)
 }

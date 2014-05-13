@@ -7,7 +7,7 @@
  the mode of the corresponding posterior distribution induced in the latent space.
 }
 \usage{
-modes = gtm.pmd(TT, X, FI, W)
+gtm.pmd(TT, X, FI, W)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,11 +17,11 @@ modes = gtm.pmd(TT, X, FI, W)
   \item{W}{a matrix of trained weights  }
 }
 \value{
-\code{modes} - the posterior modes in latent space. N-by-L 
+\code{output} - the posterior modes in latent space. N-by-L 
 }
 \seealso{\code{\link{gtm.ppd1}}, \code{\link{gtm.ppd2}}, \code{\link{gtm.pmn}}, }
 \examples{
-  lv = gtm.demo()
+  lv <- gtm.demo()
   gtm.pmd(lv$TT, lv$X, lv$FI, lv$W)
 
 }

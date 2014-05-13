@@ -7,7 +7,7 @@
   with largest number of points ranges from -1 to 1. 
 }
 \usage{
-grid = gtm.rctg(xDim, yDim)
+gtm.rctg(xDim, yDim)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,7 +15,7 @@ grid = gtm.rctg(xDim, yDim)
        respectively; must be >=2.  }
 }
 \value{
-\code{grid} - a (xDim*yDim)-by-2 matrix of grid points with the first point 
+\code{output} - a (xDim*yDim)-by-2 matrix of grid points with the first point 
   being the top-left corner and subsequent points following column-wise. 
 }
 

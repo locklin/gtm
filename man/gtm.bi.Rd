@@ -8,7 +8,7 @@
  Gaussian mixture generated in the target space from latent sample. 
 }
 \usage{
-beta = gtm.bi(Y)
+gtm.bi(Y)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,25 +16,25 @@ beta = gtm.bi(Y)
    Gaussian mixture induced in target space from the latent variable samples. }
 }
 \value{
-  \code{beta} - an initial value for the inverse variance of the Gaussian mixture 
+  \code{output} - an initial value for the inverse variance of the Gaussian mixture 
 }
 \examples{
-  T = matrix(3:61/20, ncol=1);
-  T = cbind(T, T + 1.25 * sin(2*T));
+  TT <- matrix(3:61/20, ncol=1);
+  TT <- cbind(TT, TT + 1.25 * sin(2*TT));
   # plot of sample data 
-  plot(T[,1], T[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
+  plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  X = gtm.pts(20)
-  MU = gtm.pts(5)
+  X <- gtm.pts(20)
+  MU <- gtm.pts(5)
   sigma = 1
-  FI = gtm.gbf(MU, sigma, X)
-  W = gtm.ri(T, FI);
-  Y = FI %*% W;
+  FI <- gtm.gbf(MU, sigma, X)
+  W <- gtm.ri(TT, FI);
+  Y <- FI %*% W;
   
   # plot of initialized data
   matplot(Y[,1], Y[,2], col='green', add=TRUE, type='p', pch=23)
-  beta = gtm.bi(Y)
+  beta <- gtm.bi(Y)
   symbols(x=Y[,1], y=Y[,2], circles=matrix(sqrt(1/beta) ,ncol=1,nrow=nrow(Y)),
      fg="green",add=TRUE, inches=FALSE);
   

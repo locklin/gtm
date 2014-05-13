@@ -1,10 +1,14 @@
 Package: gtm
 Type: Package
 Title: Generative topographic mapping
-Version: 1.1
-Date: 2013-10-01
+Version: 1.1.1
+Date: 2014-05-12
+Depends: R (>= 3.0), proxy
+Suggests: kohonen
 Author: Ondrej Such with modifications by Scott Locklin
 Maintainer: Scott Locklin <scott_locklin@yahoo.com>
-Description: Generative topological mapping
+Description: Generative topological mapping; copy of the first GTM Matlab package
 License: GPL
 URL: https://github.com/locklin/gtm/
+NeedsCompilation: no
+Repository: CRAN

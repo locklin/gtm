@@ -35,7 +35,7 @@ gtm.stp2(TT, noLatVarSmpl, noBasFn, s)
       sample X, and a bias unit fixed to 1.0; a matrix with the same number 
       of rows as X and noBasFn+1 columns (+1 for the bias)  }
   \item{\code{W}}{ the initial matrix of weights, mapping the latent variable sample X linearly onto the
-       2 first principal components of the target data (T)  }
+       2 first principal components of the target data (TT)  }
   \item{\code{beta}}{- the intial value for the inverse variance of the data space
       noise model  }
 }
@@ -49,14 +49,14 @@ The initial linear mapping maps the std.devs. 1:1 from the latent to the
 }
 \seealso{ \code{\link{gtm.ri}}}
 \examples{
-  TT = matrix(3:61/20, ncol=1);
-  TT = cbind(TT, TT + 1.25 * sin(2*T));
+  TT <- matrix(3:61/20, ncol=1);
+  TT <- cbind(TT, TT + 1.25 * sin(2*TT));
   # plot of sample data 
   plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  stpResult = gtm.stp2(TT, 81, 25, 2);
-  stpY = stpResult$FI %*% stpResult$W
+  stpResult <- gtm.stp2(TT, 81, 25, 2);
+  stpY <- stpResult$FI %*% stpResult$W
   
   # plot initialized data points
   matplot(stpY[,1], stpY[,2], col='green', add=TRUE, type='l')

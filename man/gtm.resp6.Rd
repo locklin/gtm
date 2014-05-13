@@ -11,7 +11,7 @@ The responsibility R(k,n) is the probability of a particular component in the
  all components. 
 }
 \usage{
-gtm.resp6(DIST, minDist, maxDist, beta, D, mode)
+gtm.resp6(DIST, minDist, maxDist, beta, D, md)
 gtm.resp3(DIST, beta, D)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -24,10 +24,10 @@ gtm.resp3(DIST, beta, D)
       of the mixture}
   \item{D}{ dimensionality of space where the data and the Gaussian mixture 
       lives; necessary to calculate the correct log-likelihood }
-  \item{mode}{optional argument used to control the mode of calculation; it can
+  \item{md}{optional argument used to control the mode of calculation; it can
      be set to 0, 1 or 2 corresponding to increasingly elaborate measure taken 
-     to reduce the amount of numerical errors; mode = 0 will be fast but less
-      accurate, mode = 2 will be slow but more accurate; the default mode is 0}
+     to reduce the amount of numerical errors; md = 0 will be fast but less
+      accurate, md = 2 will be slow but more accurate; the default mode is 0}
 }
 \value{
   A list containing 
@@ -38,7 +38,7 @@ gtm.resp3(DIST, beta, D)
 }
 \seealso{ \code{\link{gtm.dist}} }
 \examples{
-  lv = gtm.demo()
+  lv <- gtm.demo()
   gtm.resp3(gtm.dist(lv$T, lv$Y), lv$beta, 2)
   
 }

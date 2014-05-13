@@ -25,7 +25,7 @@ gtm.ppd1(tt, Y, beta, X)
 }
 \seealso{  \code{\link{gtm.pmn}}, \code{\link{gtm.pmd}} }
 \examples{
-  lv = gtm.demo()
+  lv <- gtm.demo()
   gtm.ppd1(lv$TT[1,], lv$Y, lv$beta, lv$X)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

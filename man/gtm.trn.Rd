@@ -40,13 +40,13 @@ gtm.trn(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01)
 }
 \value{
 List with the following components
-\item{\code{W}, \code{beta}} the corresponding weight matrix and inverse variance after training
-\item{llhLog} the log-likelihood after each cycle of training; optional output argument
+\item{\code{W}, \code{beta}}{ the corresponding weight matrix and inverse variance after training}
+\item{llhLog}{the log-likelihood after each cycle of training; optional output argument}
 }
 
 \examples{
   TT = matrix(3:61/20, ncol=1);
-  TT = cbind(TT, TT + 1.25 * sin(2*T));
+  TT = cbind(TT, TT + 1.25 * sin(2*TT));
   ## plot of sample data 
   plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     

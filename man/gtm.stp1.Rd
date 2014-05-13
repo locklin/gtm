@@ -45,14 +45,14 @@ The initial linear mapping maps mean and std.devs.
 }
 \seealso{ \code{\link{gtm.stp2}} }
 \examples{
-  TT = matrix(3:61/20, ncol=1);
-  TT = cbind(TT, TT + 1.25 * sin(2*T));
+  TT <- matrix(3:61/20, ncol=1);
+  TT <- cbind(TT, TT + 1.25 * sin(2*TT));
   # plot of sample data 
   plot(TT[,1], TT[,2], col='red', pch=21, xlim=c(0, 3.5), ylim=c(0,3.5))
     
   # setup and training
-  stpResult = gtm.stp1(TT, 20, 5, 2);
-  stpY = stpResult$FI %*% stpResult$W
+  stpResult <- gtm.stp1(TT, 20, 5, 2);
+  stpY <- stpResult$FI %*% stpResult$W
   
   # plot initialized data points
   matplot(stpY[,1], stpY[,2], col='green', add=TRUE, type='l')
