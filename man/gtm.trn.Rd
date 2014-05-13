@@ -10,7 +10,7 @@ a matrix, which is carried out by QR algorithm, if the matrix is positive
 definite, or by computing its pseudo-inverse, if the matrix has zero eigenvalue.
 }
 \usage{
-gtm.trn(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01)
+gtm.trn(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 0.01)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,7 +24,7 @@ gtm.trn(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01)
   \item{cycles}{ number of training cycles} 
   \item{beta}{an initial value for beta, the inverse variance of 
 			the Gaussian mixture generated in the data space}
-  \item{m}{ mode of calculation; it can be set to 0, 1 or 2 
+  \item{md}{ mode of calculation; it can be set to 0, 1 or 2 
 			corresponding to increasingly elaborate 
 			measure taken to reduce the amount of
 			numerical errors; mode = 0 will be fast but 

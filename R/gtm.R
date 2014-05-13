@@ -1,18 +1,11 @@
-## GLOBALPROXYNAMES has all the different kinds of distances
+## GLOBALDISTNAMES has all the different kinds of distances
 ## might eventually be useful for other kinds of distances,
 ## though unfortunately, some of these distances will have to be
 ## transposed.
-names(proxy::pr_DB$get_entries()) -> GLOBALPROXYNAMES
+names(proxy::pr_DB$get_entries()) -> GLOBALDISTNAMES
 
-## I am failing to see what good this thing is...
-gtm.bi <-function (Y) {
-    yInterDist = gtm.dist(Y, Y) + diag(10^10, nrow(Y))
-    meanNN = mean(apply(yInterDist, 2, min))
-    2/meanNN
-}
-
-## swap this out for the dumb gtm.dist being used.
 ## this one should be fast and much more flexible
+## than the original
 gtm.dist<-function(x,y,m=0, kind="Euclidean") {
   out = t(proxy::dist(x,y,method=kind)^2)
   if(m>0) {
@@ -23,42 +16,10 @@ gtm.dist<-function(x,y,m=0, kind="Euclidean") {
   }
 }
 
-## original function; keeping around for cannon
-gtm.dist.old <-function (TT, Y, m = 0) {
-  if (m < 0) {
-    stop("Invalid value for mode ")
-  }
-  N = nrow(TT)
-  tD = ncol(TT)
-  K = nrow(Y)
-  yD = ncol(Y)
-  if (yD != tD) {
-    stop("Mismatch in number of columns between T and Y.")
-  }
-  if (yD > 1) {
-    DIST = Y %*% t(TT)
-    ttt = matrix(colSums(t(TT)^2), nrow = 1)
-    yy = matrix(colSums(t(Y)^2), nrow = 1)
-    DIST = t(yy) %*% matrix(1, 1, N) + matrix(1, K, 1) %*% ttt - 2 * DIST
-  } else {
-    DIST = matrix(0, K, N)
-    for (n in 1:N) {
-      for (k in 1:K) {
-        DIST[k, n] = sum((TT[n,] - Y[k, ])^2)
-      }
-    }
-  }
-  if (m > 0) {
-    list(DIST = DIST, minDist = apply(DIST, 2, min), maxDist = apply(DIST, 2, max))
-  } else {
-    DIST
-  }
-}
-
 
 ## train a GTM
-gtm.trn <-function(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0.01) {
-  llhLog = matrix(0, cycles, 1)
+gtm.trn <-function(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 0.01) {
+  loglik = matrix(0, cycles, 1)
   FI.T = t(FI)
   K = nrow(FI)
   Mplus1 = col(FI)
@@ -71,20 +32,20 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0
     LAMBDA = l * matrix(1, Mplus1)
     LAMBDA[Mplus1] = 0
   }
-  gtmGlobalDist = gtm.dist(TT, FI %*% W, m)
-  if (m > 0) {
+  gtmGlobalDist = gtm.dist(TT, FI %*% W, md)
+  if (md > 0) {
     gtmGlobalMinDist = gtmGlobalDist$minDist
     gtmGlobalMaxDist = gtmGlobalDist$maxDist
     gtmGlobalDist = gtmGlobalDist$DIST
   }
   for (cycle in 1:cycles) {
     llh = gtm.resp6(gtmGlobalDist, gtmGlobalMinDist, gtmGlobalMaxDist, 
-      beta, D, m)
+      beta, D, md)
     gtmGlobalR = llh$R
     llh = llh$llh
-    llhLog[cycle] = llh
+    loglik[cycle] = llh
     if (!quiet) {
-      matplot(1:cycle, llhLog[1:cycle], xlim = c(1, cycles), 
+      matplot(1:cycle, loglik[1:cycle], xlim = c(1, cycles), 
               xlab = "Training cycle", ylab = "log-likelihood", 
               pch = 21)
       out1 = sprintf("Cycle: %d\tlogLH: %g\tBeta: %g\n", 
@@ -116,8 +77,8 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0
       oo = order(attr(cholResult, "pivot"))
       W = chol2inv(cholResult)[oo, oo] %*% (FI.T %*% (gtmGlobalR %*% TT))
     }
-    gtmGlobalDist = gtm.dist(TT, FI %*% W, m)
-    if (m > 0) {
+    gtmGlobalDist = gtm.dist(TT, FI %*% W, md)
+    if (md > 0) {
       gtmGlobalMinDist = gtmGlobalDist$minDist
       gtmGlobalMaxDist = gtmGlobalDist$maxDist
       gtmGlobalDist = gtmGlobalDist$DIST
@@ -126,9 +87,17 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing = 0
     beta = ND/sum(colSums(gtmGlobalDist * gtmGlobalR))
   }
 ##  structure(   ## in future, make a nice class with a plot method a la kohonen
-            list(W = W, beta = beta, llhLog = llhLog)
+            list(W = W, beta = beta, loglik = loglik)
 ##            ,class="gtm")
 }
+
+## I am failing to see what good this thing is...
+gtm.bi <-function (Y) {
+    yInterDist = gtm.dist(Y, Y) + diag(10^10, nrow(Y))
+    meanNN = mean(apply(yInterDist, 2, min))
+    2/meanNN
+}
+
 
 gtm.gbf <-function (MU, sigma, X) {
     K = nrow(X)
@@ -263,8 +232,7 @@ gtm.r2m1 <-function (cX, meshRows, meshCols) {
 }
 
 gtm.r2m2 <-function (cX, cY, meshRows, meshCols) {
-  list(X = matrix(cX, nrow = meshRows), Y = matrix(cY, 
-                                          nrow = meshRows))
+  list(X = matrix(cX, nrow = meshRows), Y = matrix(cY, nrow = meshRows))
 }
 
 gtm.r2m3 <-function (cX, cY, cZ, meshRows, meshCols) {
@@ -273,64 +241,64 @@ gtm.r2m3 <-function (cX, cY, cZ, meshRows, meshCols) {
 }
 
 gtm.rctg <-function (xDim, yDim) {
-    if ((xDim < 2) || (yDim < 2) || (yDim != floor(yDim)) || 
-        (xDim != floor(xDim))) {
-        stop("Invalid grid dimensions")
-      }
-    r1 = 0:(xDim - 1)
-    r2 = (yDim - 1):0
-    fx = function(x, y) return(x)
-    fy = function(x, y) return(y)
-    X = outer(r1, r2, fx)
-    Y = outer(r1, r2, fy)
-    grid = cbind(matrix(X, ncol = 1), matrix(Y, ncol = 1))
-    maxVal = max(grid)
-    grid = grid * (2/maxVal)
-    maxXY = apply(grid, 2, max)
-    grid[, 1] = grid[, 1] - maxXY[1]/2
-    grid[, 2] = grid[, 2] - maxXY[2]/2
-    grid
+  if ((xDim < 2) || (yDim < 2) || (yDim != floor(yDim)) || 
+      (xDim != floor(xDim))) {
+    stop("Invalid grid dimensions")
+  }
+  r1 = 0:(xDim - 1)
+  r2 = (yDim - 1):0
+  fx = function(x, y) return(x)
+  fy = function(x, y) return(y)
+  X = outer(r1, r2, fx)
+  Y = outer(r1, r2, fy)
+  grid = cbind(matrix(X, ncol = 1), matrix(Y, ncol = 1))
+  maxVal = max(grid)
+  grid = grid * (2/maxVal)
+  maxXY = apply(grid, 2, max)
+  grid[, 1] = grid[, 1] - maxXY[1]/2
+  grid[, 2] = grid[, 2] - maxXY[2]/2
+  grid
 }
 
 gtm.resp3 <- function (DIST, beta, D) {
-    gtm.resp6(DIST, beta, D, beta, D, 0)
+  gtm.resp6(DIST, beta, D, beta, D, 0)
 }
 
 gtm.resp6 <- function (DIST, minDist, maxDist, beta, D, md) {
-    if (md < 0 || md > 2 || md != floor(md)) {
-      stop("Unknown mode of calculation")
-    }
-    if (is.matrix(beta) || is.matrix(D)) {
-      stop("beta and D should be scalars - mismatch of arguments?")
-    }
-    if (D != floor(D)) {
-      stop("Invalid value for D ")
-    }
-    K = nrow(DIST)
-    N = ncol(DIST)
-    if (md > 0) {
-        distCorr = (maxDist + minDist)/2
-        distCorr = pmin(distCorr, (minDist + 700 * (2/beta)))
-        for (n in 1:N) {
-          DIST[, n] = DIST[, n] - distCorr[n]
-        }
-    }
-    R = exp((-beta/2) * DIST)
-    if (md < 2) {
-      rSum = colSums(R)
-    } else {
-      rSum = colSums(gtm.sort(R))
-    }
+  if (md < 0 || md > 2 || md != floor(md)) {
+    stop("Unknown mode of calculation")
+  }
+  if (is.matrix(beta) || is.matrix(D)) {
+    stop("beta and D should be scalars - mismatch of arguments?")
+  }
+  if (D != floor(D)) {
+    stop("Invalid value for D ")
+  }
+  K = nrow(DIST)
+  N = ncol(DIST)
+  if (md > 0) {
+    distCorr = (maxDist + minDist)/2
+    distCorr = pmin(distCorr, (minDist + 700 * (2/beta)))
     for (n in 1:N) {
-      R[, n] = R[, n]/rSum[n]
+      DIST[, n] = DIST[, n] - distCorr[n]
     }
-    if (md < 1) {
-      llh = sum(log(rSum)) + N * ((D/2) * log(beta/(2 * pi)) - log(K))
-    } else {
-      llh = sum(log(rSum) + distCorr * (-beta/2)) + N * ((D/2) * 
-        log(beta/(2 * pi)) - log(K))
-    }
-    list(llh = llh, R = R)
+  }
+  R = exp((-beta/2) * DIST)
+  if (md < 2) {
+    rSum = colSums(R)
+  } else {
+    rSum = colSums(gtm.sort(R))
+  }
+  for (n in 1:N) {
+    R[, n] = R[, n]/rSum[n]
+  }
+  if (md < 1) {
+    llh = sum(log(rSum)) + N * ((D/2) * log(beta/(2 * pi)) - log(K))
+  } else {
+    llh = sum(log(rSum) + distCorr * (-beta/2)) + N * ((D/2) * 
+      log(beta/(2 * pi)) - log(K))
+  }
+  list(llh = llh, R = R)
 }
 
 gtm.ri <-function (TT, FI) {
@@ -355,6 +323,8 @@ gtm.sort <-function (R) {
     R[, order(idx)]
 }
 
+## these should be directly feeding gtm.trn
+## they should also have more selections for type of grid
 gtm.stp1 <-function (TT, noLatVarSmpl, noBasFn, s) {
     if (floor(noLatVarSmpl) != noLatVarSmpl || floor(noBasFn) != 
         noBasFn || noLatVarSmpl < 0 || noBasFn < 0) {
@@ -372,6 +342,10 @@ gtm.stp1 <-function (TT, noLatVarSmpl, noBasFn, s) {
     list(X = X, MU = MU, FI = FI, W = pciResult$W, beta = pciResult$beta)
 }
 
+## these should be directly feeding gtm.trn
+## they should also have more selections for type of grid
+## this one, for example, should have a hex option
+## it doesn't seem to be used anywhere here.
 gtm.stp2 <-function (TT, noLatVarSmpl, noBasFn, s) {
     if (s <= 0) {
       stop("Argument s must have strict positive value")

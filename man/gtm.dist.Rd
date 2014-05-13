@@ -17,7 +17,7 @@ gtm.dist(x, y, m = 0, kind="Euclidean")
     calculated; the default mode is0  }
   \item{kind}{ type of distance; presently only tested with Euclidean,
     but could eventually include all of the proxy methods in
-    gtm::GLOBALPROXYNAMES }
+    gtm::GLOBALDISTNAMES }
 
 }
 \details{
