@@ -4,6 +4,46 @@
 ## transposed.
 names(proxy::pr_DB$get_entries()) -> GLOBALDISTNAMES
 
+gtm.train <-function(x,points,samples,lspace="hex",randsetup=FALSE) {
+  ## this guy should contain a more streamlined creation  and training of GTM
+  ## including a hex option
+  ## -other good things to do; make the object here for the plot and eval methods
+  ## don't expose it to the namespace until later I guess
+  if(randsetup) {
+    X <- gtm.pts(samples)
+    MU <- gtm.pts(points)
+    sigma <- 1
+    FI <- gtm.gbf(MU, sigma, X)
+    W <- gtm.ri(x, FI)
+    beta <- gtm.bi(W)
+  } else {
+    switch(lspace,
+           lin=gtm.stp1(x,samples,points,2),
+           hex=gtm.stp2(x,samples,points,2,latent.space),
+           rect=gtm.stp2(x,samples,points,2)) -> latent
+    beta <- latent$beta
+    FI <-  latent$FI
+    W <- latent$W
+    X <- latent$X
+  }
+  trained <- gtm.trn(x,FI,W,0,1,beta,quiet=T)
+  
+  structure(list(X=X,
+                 TT=x,
+                 W=trained$W,
+                 Y=FI %*% trained$W,
+                 beta=beta,
+                 llh=trained$llh,
+                 FI=FI,
+                 space=latent,
+                 method="gtm"),
+            class="gtm")
+}
+
+gtm.plot <-function() {
+  
+}
+
 ## this one should be fast and much more flexible
 ## than the original
 gtm.dist<-function(x,y,m=0, kind="Euclidean") {
@@ -16,21 +56,20 @@ gtm.dist<-function(x,y,m=0, kind="Euclidean") {
   }
 }
 
-
 ## train a GTM
 gtm.trn <-function(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 0.01) {
   loglik = matrix(0, cycles, 1)
   FI.T = t(FI)
   K = nrow(FI)
-  Mplus1 = col(FI)
+  mplus = ncol(FI) ## originally "col" which seems to be wrong
   N = nrow(TT)
   D = ncol(TT)
   ND = N * D
-  A = matrix(0, Mplus1, Mplus1)
-  cholDcmp = matrix(0, Mplus1, Mplus1)
+  A = matrix(0, mplus, mplus)
+  cholDcmp = matrix(0, mplus, mplus)
   if (l > 0) {
-    LAMBDA = l * matrix(1, Mplus1)
-    LAMBDA[Mplus1] = 0
+    LAMBDA = l * matrix(1, mplus)
+    LAMBDA[mplus] = 0
   }
   gtmGlobalDist = gtm.dist(TT, FI %*% W, md)
   if (md > 0) {
@@ -39,17 +78,15 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 
     gtmGlobalDist = gtmGlobalDist$DIST
   }
   for (cycle in 1:cycles) {
-    llh = gtm.resp6(gtmGlobalDist, gtmGlobalMinDist, gtmGlobalMaxDist, 
-      beta, D, md)
+    llh = gtm.resp6(gtmGlobalDist, gtmGlobalMinDist, gtmGlobalMaxDist,  beta,
+      D, md)
     gtmGlobalR = llh$R
     llh = llh$llh
     loglik[cycle] = llh
     if (!quiet) {
-      matplot(1:cycle, loglik[1:cycle], xlim = c(1, cycles), 
-              xlab = "Training cycle", ylab = "log-likelihood", 
-              pch = 21)
-      out1 = sprintf("Cycle: %d\tlogLH: %g\tBeta: %g\n", 
-        cycle, llh, beta)
+      matplot(1:cycle, loglik[1:cycle], xlim = c(1, cycles), xlab = "Training cycle",
+              ylab = "log-likelihood",  pch = 21)
+      out1 = sprintf("Cycle: %d\tlogLH: %g\tBeta: %g\n", cycle, llh, beta)
       cat(out1)
     }
     if (l > 0) {
@@ -65,12 +102,11 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 
       svdResult = svd(A)
       sd = svdResult$d
       N = sum(ifelse(sd > minSing, 1, 0))
-      warning(sprintf("Using %d out of %d eigenvalues", 
-                      N, nrow(A)))
+      warning(sprintf("Using %d out of %d eigenvalues", N, nrow(A)))
       if (N < 1) {
         stop("very singular matrix")
       }
-      svdInverse = svdResult$v[, 1:N] %*% diag(1/sd[1:N], 
+      svdInverse = svdResult$v[, 1:N] %*% diag(1/sd[1:N],
         nrow = N) %*% t(svdResult$u[, 1:N])
       W = svdInverse %*% (FI.T %*% (gtmGlobalR %*% TT))
     } else {
@@ -86,9 +122,7 @@ gtm.trn <-function(TT, FI, W, l, cycles, beta, md = 1, quiet = FALSE, minSing = 
     ##       gc() ## this takes a lot of time ... why is it there?
     beta = ND/sum(colSums(gtmGlobalDist * gtmGlobalR))
   }
-##  structure(   ## in future, make a nice class with a plot method a la kohonen
-            list(W = W, beta = beta, loglik = loglik)
-##            ,class="gtm")
+  list(W = W, beta = beta, loglik = loglik)
 }
 
 ## I am failing to see what good this thing is...
@@ -98,7 +132,16 @@ gtm.bi <-function (Y) {
     2/meanNN
 }
 
+##########################################
+## functions dealing with gridding
+##
+## this can eventually be hidden from the namespace
+gtm.pts <-function (M) {
+    N = M - 1
+    matrix(((-N/2):(N/2))/(N/2), ncol = 1)
+}
 
+## does this work for  multiple dimensions?
 gtm.gbf <-function (MU, sigma, X) {
     K = nrow(X)
     L = ncol(X)
@@ -111,29 +154,52 @@ gtm.gbf <-function (MU, sigma, X) {
     cbind(FI, matrix(1, nrow = K, ncol = 1))
 }
 
-gtm.hxg <-function (xDim, yDim) {
-    if ((xDim < 2) || (yDim < 2) || (yDim != floor(yDim)) || 
-        (xDim != floor(xDim))) {
+
+## hexagon function; find a use for this in gtm.stp2
+gtm.hex <-function (xdim, ydim) {
+    if ((xdim < 2) || (ydim < 2) || (ydim != floor(ydim)) || 
+        (xdim != floor(xdim))) {
       stop("Invalid grid dimensions")
     }
-    r1 = 0:(xDim - 1)
-    r2 = (yDim - 1):0
+    r1 = 0:(xdim - 1)
+    r2 = (ydim - 1):0
     fx = function(x, y) return(x)
     fry = function(x, y) return(y * sqrt(3)/2)
-    X = matrix(outer(r1, r2, fx), ncol = yDim)
-    Y = outer(r1, r2, fry)
+    xx = matrix(outer(r1, r2, fx), ncol = ydim)
+    yy = outer(r1, r2, fry)
     i = 2
-    while (i <= yDim) {
-        X[, i] = X[, i] + 0.5
+    while (i <= ydim) {
+        xx[, i] = xx[, i] + 0.5
         i = i + 2
     }
-    grid = cbind(matrix(X, ncol = 1), matrix(Y, ncol = 1))
-    maxVal = max(grid)
-    grid = grid * (2/maxVal)
-    maxXY = apply(grid, 2, max)
-    grid[, 1] = grid[, 1] - maxXY[1]/2
-    grid[, 2] = grid[, 2] - maxXY[2]/2
+    grid = cbind(matrix(xx, ncol = 1), matrix(yy, ncol = 1))
+    maxv = max(grid)
+    grid = grid * (2/maxv)
+    maxxy = apply(grid, 2, max)
+    grid[, 1] = grid[, 1] - maxxy[1]/2
+    grid[, 2] = grid[, 2] - maxxy[2]/2
     grid
+}
+
+## rectangle grid
+gtm.rctg <-function (xDim, yDim) {
+  if ((xDim < 2) || (yDim < 2) || (yDim != floor(yDim)) || 
+      (xDim != floor(xDim))) {
+    stop("Invalid grid dimensions")
+  }
+  r1 = 0:(xDim - 1)
+  r2 = (yDim - 1):0
+  fx = function(x, y) return(x)
+  fy = function(x, y) return(y)
+  X = outer(r1, r2, fx)
+  Y = outer(r1, r2, fy)
+  grid = cbind(matrix(X, ncol = 1), matrix(Y, ncol = 1))
+  maxVal = max(grid)
+  grid = grid * (2/maxVal)
+  maxXY = apply(grid, 2, max)
+  grid[, 1] = grid[, 1] - maxXY[1]/2
+  grid[, 2] = grid[, 2] - maxXY[2]/2
+  grid
 }
 
 gtm.lbf <-function (X) {
@@ -143,7 +209,7 @@ gtm.lbf <-function (X) {
 gtm.pci <-function (TT, X, FI) {
     K = nrow(X)
     L = ncol(X)
-    Mplus1 = ncol(FI)
+    mplus = ncol(FI)
     if (K != nrow(FI)) {
       stop("wrong number of rows")
     }
@@ -152,14 +218,14 @@ gtm.pci <-function (TT, X, FI) {
     normX = (X - (matrix(1, K, L) %*% diag(colMeans(X), ncol(X)))) %*% 
         diag(1/apply(X, 2, sd), ncol(X))
     W = lsfit(FI, normX %*% t(A), intercept = FALSE)$coefficients
-    W[Mplus1, ] = colMeans(TT)
+    W[mplus, ] = colMeans(TT)
     W
 }
 
 gtm.pci.beta <-function (TT, X, FI) {
     K = nrow(X)
     L = ncol(X)
-    Mplus1 = ncol(FI)
+    mplus = ncol(FI)
     if (K != nrow(FI)) {
       stop("wrong number of rows")
     }
@@ -168,7 +234,7 @@ gtm.pci.beta <-function (TT, X, FI) {
     normX = (X - (matrix(1, K, L) %*% diag(colMeans(X), ncol(X)))) %*% 
         diag(1/apply(X, 2, sd), ncol(X))
     W = lsfit(FI, normX %*% t(A), intercept = FALSE)$coefficients
-    W[Mplus1, ] = colMeans(TT)
+    W[mplus, ] = colMeans(TT)
     interDistBeta = gtm.bi(FI %*% W)
     if (L < length(TT[1, ])) {
       beta = min(interDistBeta, (1/eV$values[L + 1]))
@@ -222,11 +288,6 @@ gtm.ppd2 <-function (tt, Y, beta, X, xDim, yDim) {
     }
 }
 
-gtm.pts <-function (M) {
-    N = M - 1
-    matrix(((-N/2):(N/2))/(N/2), ncol = 1)
-}
-
 gtm.r2m1 <-function (cX, meshRows, meshCols) {
     list(X = matrix(cX, nrow = meshRows))
 }
@@ -238,26 +299,6 @@ gtm.r2m2 <-function (cX, cY, meshRows, meshCols) {
 gtm.r2m3 <-function (cX, cY, cZ, meshRows, meshCols) {
   list(X = matrix(cX, nrow = meshRows), Y = matrix(cY,  nrow = meshRows),
        Z = matrix(cZ, nrow = meshRows))
-}
-
-gtm.rctg <-function (xDim, yDim) {
-  if ((xDim < 2) || (yDim < 2) || (yDim != floor(yDim)) || 
-      (xDim != floor(xDim))) {
-    stop("Invalid grid dimensions")
-  }
-  r1 = 0:(xDim - 1)
-  r2 = (yDim - 1):0
-  fx = function(x, y) return(x)
-  fy = function(x, y) return(y)
-  X = outer(r1, r2, fx)
-  Y = outer(r1, r2, fy)
-  grid = cbind(matrix(X, ncol = 1), matrix(Y, ncol = 1))
-  maxVal = max(grid)
-  grid = grid * (2/maxVal)
-  maxXY = apply(grid, 2, max)
-  grid[, 1] = grid[, 1] - maxXY[1]/2
-  grid[, 2] = grid[, 2] - maxXY[2]/2
-  grid
 }
 
 gtm.resp3 <- function (DIST, beta, D) {
@@ -305,13 +346,13 @@ gtm.ri <-function (TT, FI) {
     N = nrow(TT)
     D = ncol(TT)
     K = nrow(FI)
-    Mplus1 = ncol(FI)
+    mplus = ncol(FI)
     varT = matrix(apply(TT, 2, sd)^2, 1, D)
-    mnVarFI = mean(apply(FI[, 1:(Mplus1 - 1)], 2, sd)^2)
-    stdW = varT/(mnVarFI * (Mplus1 - 2))
-    W = rbind(matrix(rnorm((Mplus1 - 1) * D), Mplus1 - 1, D) %*% 
+    mnVarFI = mean(apply(FI[, 1:(mplus - 1)], 2, sd)^2)
+    stdW = varT/(mnVarFI * (mplus - 2))
+    W = rbind(matrix(rnorm((mplus - 1) * D), mplus - 1, D) %*% 
         diag(c(sqrt(stdW)), D), matrix(0, 1, D))
-    W[Mplus1, ] = colMeans(TT) - colMeans(FI %*% W)
+    W[mplus, ] = colMeans(TT) - colMeans(FI %*% W)
     W
 }
 
@@ -323,41 +364,55 @@ gtm.sort <-function (R) {
     R[, order(idx)]
 }
 
+###############################################
+## setup functions
 ## these should be directly feeding gtm.trn
-## they should also have more selections for type of grid
-gtm.stp1 <-function (TT, noLatVarSmpl, noBasFn, s) {
-    if (floor(noLatVarSmpl) != noLatVarSmpl || floor(noBasFn) != 
-        noBasFn || noLatVarSmpl < 0 || noBasFn < 0) {
+
+gtm.stp1 <-function (TT, numsamp, numbasis, s) {
+    if (floor(numsamp) != numsamp || floor(numbasis) != 
+        numbasis || numsamp < 0 || numbasis < 0) {
       stop("Incorrect arguments")
     }
     if (s <= 0) {
       stop("Argument s must have strict positive value")
     }
-    X = gtm.pts(noLatVarSmpl)
-    MU = gtm.pts(noBasFn)
-    MU = MU * (noBasFn/(noBasFn - 1))
+    X = gtm.pts(numsamp)
+    MU = gtm.pts(numbasis)
+    MU = MU * (numbasis/(numbasis - 1))
     sigma = s * (MU[2] - MU[1])
     FI = gtm.gbf(MU, sigma, X)
     pciResult = gtm.pci.beta(TT, X, FI)
     list(X = X, MU = MU, FI = FI, W = pciResult$W, beta = pciResult$beta)
 }
 
-## these should be directly feeding gtm.trn
-## they should also have more selections for type of grid
 ## this one, for example, should have a hex option
 ## it doesn't seem to be used anywhere here.
-gtm.stp2 <-function (TT, noLatVarSmpl, noBasFn, s) {
+gtm.stp2 <-function (TT, numsamp, numbasis, s,kind="rect") {
     if (s <= 0) {
       stop("Argument s must have strict positive value")
     }
-    gridXdim = sqrt(noLatVarSmpl)
-    gridFIdim = sqrt(noBasFn)
-    if ((gridXdim != floor(gridXdim)) || (gridFIdim != floor(gridFIdim))) {
-      stop("Invalid number of basis functions or latent variable size.")
+    if((length(numsamp)==1) & (length(numbasis)==1)) {
+      xdim = sqrt(numsamp)
+      ydim= xdim
+      fxdim = sqrt(numbasis)
+      fydim = fxdim 
+      if ((xdim != floor(xdim)) || (xdim != floor(xdim))) {
+        stop("Invalid number of basis functions or latent variable size.")
+      }
+    } else {
+      xdim = numsamp[1]
+      ydim = numsamp[2]
+      fxdim = numsamp[1]
+      fydim = numsamp[2]
     }
-    X = gtm.rctg(gridXdim, gridXdim)
-    MU = gtm.rctg(gridFIdim, gridFIdim)
-    MU = MU * (gridFIdim/(gridFIdim - 1))
+    if(kind=="rect") {
+      X = gtm.rctg(xdim, ydim)
+      MU = gtm.rctg(fxdim, fydim)
+    } else {
+      X = gtm.hex(xdim, ydim)
+      MU = gtm.hex(fxdim, fydim)
+    }
+    MU = MU * (fxdim/(fxdim - 1)) ## is this strictly correct?
     sigma = s * (MU[1, 1] - MU[2, 1])
     FI = gtm.gbf(MU, sigma, X)
     pciResult = gtm.pci.beta(TT, X, FI)

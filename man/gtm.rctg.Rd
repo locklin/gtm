@@ -19,7 +19,7 @@ gtm.rctg(xDim, yDim)
   being the top-left corner and subsequent points following column-wise. 
 }
 
-\seealso{\code{\link{gtm.hxg}}}
+\seealso{\code{\link{gtm.hex}}}
 \examples{
   plot(gtm.rctg(3,4))
 }

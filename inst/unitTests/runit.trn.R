@@ -1,5 +1,4 @@
 ### --- Test setup ---
-library("RUnit")
 library("gtm")
 
 
@@ -8,7 +7,7 @@ gtm.trn.old <-function(TT, FI, W, l, cycles, beta, m = 1, quiet = FALSE, minSing
   loglik = matrix(0, cycles, 1)
   FI.T = t(FI)
   K = nrow(FI)
-  Mplus1 = col(FI)
+  Mplus1 = ncol(FI) ## this was originally col(FI); I think it's a mistake
   N = nrow(TT)
   D = ncol(TT)
   ND = N * D
@@ -80,13 +79,18 @@ TT = cbind(TT, TT + 1.25 * sin(2*TT))
          
 ## setup and training
 res = gtm.stp1(TT, 20, 5, 2)
-old = gtm.trn.old(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
-new = gtm.trn(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
+old1d = gtm.trn.old(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
+new1d = gtm.trn(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
+
+## setup and training 2d
+res = gtm.stp2(TT, 81, 25, 2)
+old2d = gtm.trn.old(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
+new2d = gtm.trn(TT, res$FI, res$W, 0.0, 20, res$beta,quiet=TRUE)
 
 ### --- Test functions ---
 
 
-test.trn.diff <- function() {  
+trn.diff <- function(old, new) {  
   checkEqualsNumeric(old$W,new$W,
                      tolerance= .Machine$double.eps^0.5)
     checkEqualsNumeric(old$beta,new$beta,
@@ -94,3 +98,17 @@ test.trn.diff <- function() {
     checkEqualsNumeric(old$loglik,new$loglik,
                      tolerance= .Machine$double.eps^0.5)
 }
+
+
+test.trn.diff1d<-function() {
+  trn.diff(old1d,new1d)
+}
+
+test.trn.diff2d<-function() {
+  trn.diff(old2d,new2d)
+}
+
+
+
+
+

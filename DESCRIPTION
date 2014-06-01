@@ -8,7 +8,7 @@ Suggests: kohonen
 Author: Ondrej Such with modifications by Scott Locklin
 Maintainer: Scott Locklin <scott_locklin@yahoo.com>
 Description: Generative topological mapping; copy of the first GTM Matlab package
-License: GPL
+License: GPL2
 URL: https://github.com/locklin/gtm/
 NeedsCompilation: no
 Repository: CRAN

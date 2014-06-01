@@ -7,15 +7,17 @@ The function creates two rectangular grids \code{X}, \code{MU} in the latent spa
 according to principal components.
 }
 \usage{
-gtm.stp2(TT, noLatVarSmpl, noBasFn, s)
+gtm.stp2(TT, numsamp, numbasis, s,kind="rect")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{TT}{target data, to be modelled by the GTM.}
-  \item{noLatVarSmpl}{number of samples in the latent variable
+  \item{numsamp}{number of samples in the latent variable
 				space; must be a square, e.g.
-				1, 4, 9, 16, 25, 36, 49, ...}
-  \item{noBasFn}{number of basis function in the latent space; must be a square}
+				1, 4, 9, 16, 25, 36, 49, ...
+			      or pairs c(nx,ny)}
+  \item{numbasis}{number of basis function in the latent space; must be
+    a square or pairs}
   \item{s}{the width of basis functions relative 
 				to the distance between two neighbouring 
 				basis function centres, i.e. if s = 1,
@@ -23,17 +25,17 @@ gtm.stp2(TT, noLatVarSmpl, noBasFn, s)
 				(std.dev) equal to (1 times) the distance 
 				between two neighbouring basis function 
 				centres.}
-
+\item{kind}{"rect" or "hex" for rectangular or hexagonal grid}
 }
 
 \value{
  List with the following components
   \item{\code{X}}{the grid of data points making up the latent variable sample;
-      a matrix of size noLatVarSmpl-by-2, in which each row is a data point}
-  \item{\code{MU}}{a noBasFn-by-2 matrix holding the coordinates of the centres of the basis functions  }
+      a matrix of size numsamp-by-2, in which each row is a data point}
+  \item{\code{MU}}{a numbasis-by-2 matrix holding the coordinates of the centres of the basis functions  }
   \item{\code{FI}}{the activations of the basis functions when fed the latent variable
       sample X, and a bias unit fixed to 1.0; a matrix with the same number 
-      of rows as X and noBasFn+1 columns (+1 for the bias)  }
+      of rows as X and numbasis+1 columns (+1 for the bias)  }
   \item{\code{W}}{ the initial matrix of weights, mapping the latent variable sample X linearly onto the
        2 first principal components of the target data (TT)  }
   \item{\code{beta}}{- the intial value for the inverse variance of the data space

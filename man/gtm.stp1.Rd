@@ -3,16 +3,17 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Generates the components of a GTM with a 1D latent space}
 \description{
- 1-5 lines 
+The function creates two linearly spaced grids \code{X}, \code{MU} in the latent space, computes activation matrix \code{FI}  and initializes weight matrix W
+according to principal components.
 }
 \usage{
-gtm.stp1(TT, noLatVarSmpl, noBasFn, s)
+gtm.stp1(TT, numsamp, numbasis, s)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{TT}{target data, to be modelled by the GTM.}
-  \item{noLatVarSmpl}{number of samples in the latent variable space}
-  \item{noBasFn}{number of basis functions}
+  \item{numsamp}{number of samples in the latent variable space}
+  \item{numbasis}{number of basis functions}
   \item{s}{the width of basis functions relative
 				to the distance between two neighbouring 
 				basis function centres, i.e. if s = 1,
@@ -24,12 +25,12 @@ gtm.stp1(TT, noLatVarSmpl, noBasFn, s)
 \value{
   List with the following components
   \item{\code{X}}{the grid of data points making up the latent variable sample;
-      a vector of length noLatVarSmpl, in which each row is a data point}
-  \item{\code{MU}}{a noBasFn-element vector holding the coordinates of the centres
+      a vector of length numsamp, in which each row is a data point}
+  \item{\code{MU}}{a numbasis-element vector holding the coordinates of the centres
       of the basis functions }
   \item{\code{FI}}{the activations of the basis functions when fed the latent variable
       sample X, and a bias unit fixed to 1.0; a matrix with the same number 
-      of rows as X and noBasFn+1 columns (+1 for the bias)  }
+      of rows as X and numbasis+1 columns (+1 for the bias)  }
   \item{\code{W}}{ the initial matrix of weights, mapping the latent variable sample X
       linearly onto the first principal component of the target data (T) }
   \item{\code{beta}}{- the intial value for the inverse variance of the data space

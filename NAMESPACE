@@ -1,12 +1,12 @@
 ## imports
-import("proxy")
+importFrom(proxy,dist)
 
 ## exports
 export("gtm.bi")
 export("gtm.demo")
-export("gtm.dist")
+export("gtm.dist") 
 export("gtm.gbf")
-export("gtm.hxg")
+export("gtm.hex") ##This can probably be covered
 export("gtm.lbf")
 export("gtm.pci")
 export("gtm.pci.beta")
@@ -15,7 +15,7 @@ export("gtm.pmn")
 export("gtm.ppd1")
 export("gtm.ppd2")
 export("gtm.pts")
-export("gtm.rctg")
+export("gtm.rctg")  ##This can probably be covered
 export("gtm.resp3")
 export("gtm.resp6")
 export("gtm.ri")
