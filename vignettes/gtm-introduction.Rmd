@@ -1,0 +1,156 @@
+---
+title: "gtm-introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gtm-introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 5
+)
+```
+
+## What is GTM?
+
+The Generative Topographic Mapping (GTM) is a probabilistic model for
+nonlinear dimensionality reduction, introduced by Bishop, Svensen, and
+Williams (1998). Like the Self-Organizing Map (SOM), GTM maps
+high-dimensional data onto a low-dimensional grid for visualization.
+Unlike SOM, GTM is grounded in a proper probability density model and is
+trained by Expectation-Maximization (EM), which guarantees monotonic
+improvement of the log-likelihood.
+
+Key advantages over SOM:
+
+- A principled probabilistic model (no ad-hoc learning rate or
+  neighborhood function schedules)
+- Quantifiable density estimates in data space
+- Magnification factors from the Jacobian of the mapping
+- Convergence is guaranteed and measurable
+
+## Quick Start
+
+Fit a GTM to the classic `iris` dataset:
+
+```{r fit-iris}
+library(gtm)
+data(iris)
+
+model <- GtmFit(as.matrix(iris[, 1:4]), n_iter = 50, verbose = FALSE)
+print(model)
+```
+
+## Projection Plots
+
+Project data points onto the 2D latent space using posterior mean
+positions, colored by species:
+
+```{r plot-means}
+plot(model, type = "means", labels = iris$Species,
+     main = "Iris species on GTM (mean projection)")
+```
+
+The mode projection assigns each point to its highest-responsibility node:
+
+```{r plot-modes}
+plot(model, type = "modes", labels = iris$Species,
+     main = "Iris species on GTM (mode projection)")
+```
+
+## Exploring the Map
+
+### Density
+
+The density plot shows the cumulative responsibility at each node,
+revealing which parts of the map are most populated:
+
+```{r plot-density}
+plot(model, type = "density")
+```
+
+### U-Matrix
+
+The U-matrix shows the average distance between neighboring nodes in
+data space. High values indicate cluster boundaries:
+
+```{r plot-umatrix}
+plot(model, type = "umatrix")
+```
+
+### Component Planes
+
+Component planes show the R-weighted average of each data variable per
+node. This reveals how each variable varies across the map:
+
+```{r plot-components, fig.height = 6}
+plot(model, type = "components")
+```
+
+Or inspect a single variable:
+
+```{r plot-component-1}
+plot(model, type = "components", component = 1,
+     main = "Sepal.Length")
+```
+
+## Magnification Factors
+
+A unique GTM feature: the magnification factor at each node measures
+local area distortion of the mapping. Regions where the map is
+stretched to cover more data space have higher magnification:
+
+```{r plot-magnification}
+plot(model, type = "magnification")
+```
+
+## Convergence
+
+The log-likelihood should increase monotonically during EM training:
+
+```{r plot-convergence}
+plot(model, type = "convergence")
+```
+
+## Hexagonal Grid
+
+GTM supports hexagonal grids, which provide more uniform neighbor
+distances:
+
+```{r hex-grid}
+model_hex <- GtmFit(as.matrix(iris[, 1:4]),
+                    grid_type = "hex", n_iter = 50)
+plot(model_hex, type = "density", main = "Hex grid density")
+```
+
+## 1D Latent Space
+
+GTM also works with a 1-dimensional latent space:
+
+```{r fit-1d}
+model_1d <- GtmFit(as.matrix(iris[, 1:4]),
+                   latent_dim = 1, n_iter = 50)
+print(model_1d)
+plot(model_1d, type = "density", main = "1D GTM density")
+```
+
+## Prediction
+
+Project new data onto a fitted map:
+
+```{r predict}
+new_data <- as.matrix(iris[1:5, 1:4])
+proj_means <- predict(model, newdata = new_data, type = "means")
+print(proj_means)
+```
+
+## References
+
+Bishop, C. M., Svensen, M., & Williams, C. K. I. (1998).
+GTM: The Generative Topographic Mapping.
+*Neural Computation*, 10(1), 215-234.
